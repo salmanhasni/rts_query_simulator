@@ -7,14 +7,14 @@ var pcap = require('pcap'),
     pcap_session = pcap.createSession('eth0', "dst port 53");
 
 var cassandra = require('cassandra-driver');
-var client = new cassandra.Client({ contactPoints: ['96.45.94.55:9042', '96.45.94.45:9042'], keyspace: 'real_time_stats_billing'});
+var client = new cassandra.Client({ contactPoints: ['h1:port1', 'h2:port2'], keyspace: 'keyspace_name'});
 var countType = ["geo_filter", "geo_proximity", "standard"];
 
 pcap_session.on('packet', function (raw_packet) {
     var packet = pcap.decode.packet(raw_packet);
     var domainName = Packet.parse(packet.payload.payload.payload.data).question[0].name.toLowerCase();
     
-    MongoClient.connect( "mongodb://constellix:constellix@96.45.94.45:27017/constellix-dns", function( err, db ) {
+    MongoClient.connect( "connectionUrl", function( err, db ) {
     	db.collection('domain').find({name: domainName}, {_id: 1, accountId: 1}).toArray(function(err, docs) {
     		if(docs.length > 0){
 		    var data = {};
